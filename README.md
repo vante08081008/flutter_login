@@ -37,7 +37,7 @@ showDebugButtons |   `bool`     | <sub>Display the debug buttons to quickly forw
 hideForgotPasswordButton |   `bool`     | <sub>Hides the Forgot Password button if set to true</sub>
 hideSignUpButton |   `bool`     | <sub>Hides the SignUp button if set to true</sub>
 hideProvidersTitle |   `bool`     | <sub>Hides the title above login providers if set to true. In case the providers List is empty this is uneffective, as the title is hidden anyways. The default is `false`</sub>
-
+loginProviders |   <sub>`List<LoginProvider>`</sub>    | <sub>Creates either `button` or `icon` for Authenication Providers (e.g. Facebook, Google etc</sub>
 
 
 
@@ -100,6 +100,15 @@ PHONE  | The User Field will be set to be phone
 
 [LoginUserType] will change how the user field [TextField] behaves. Autofills and Keyboard Type will be adjusted automatically for the type of user that you pass.
 
+### LoginProvider
+
+Property |   Type     | Desciption
+-------- |------------| ---------------
+button | `Widget` | Used for Buttons for [LoginProvider] - see example uses [SignInButton] package
+icon | `IconData` | Icon that is used for a button for [LoginProvider]
+callback | `ProviderAuthCallback` | To be used as a callback if [LoginProvider] is only using [icon]
+
+*NOTE:* Both [button] and [icon] can be added to [LoginProvider], but [button] will take preference over [icon]
 
 ## Examples
 
@@ -170,6 +179,8 @@ class LoginScreen extends StatelessWidget {
 
 ```dart
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'dashboard_screen.dart';
 
@@ -208,26 +219,28 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterLogin(
       title: 'ECORP',
-      logo: 'assets/images/ecorp-lightblue.png',
+      logo: 'assets/images/ecorp.png',
       onLogin: _authUser,
       onSignup: _authUser,
       
         loginProviders: <LoginProvider>[
+          LoginProvider(
+          button: SignInButton(
+                Buttons.FacebookNew,
+                onPressed: () {
+                  print('start facebook sign in');
+                  await Future.delayed(loginTime);
+                  print('stop facebook sign in');              
+                  return null;
+                },
+              ),
+          ),
           LoginProvider(
             icon: FontAwesomeIcons.google,
             callback: () async {
               print('start google sign in');
               await Future.delayed(loginTime);
               print('stop google sign in');              
-              return null;
-            },
-          ),
-          LoginProvider(
-            icon: FontAwesomeIcons.facebookF,
-            callback: () async {            
-              print('start facebook sign in');
-              await Future.delayed(loginTime);
-              print('stop facebook sign in');              
               return null;
             },
           ),
@@ -261,7 +274,7 @@ class LoginScreen extends StatelessWidget {
 }
 ```
 
-<img src="https://github.com/xnio94/flutter_login/raw/master/demo/sign_in_providers.png" width="300">
+<img src="https://i.ibb.co/smvy4bS/Screenshot-1617591971.png" width="300">
 
 
 
