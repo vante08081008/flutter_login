@@ -1,5 +1,6 @@
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/material.dart';
+import 'package:flutter_login/additional_info.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'constants.dart';
@@ -9,6 +10,8 @@ import 'users.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
+  TextEditingController _nickNameController = TextEditingController();
+  FocusNode _nickNameFocusNode = FocusNode();
 
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
@@ -191,6 +194,11 @@ class LoginScreen extends StatelessWidget {
         print('Signup info');
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
+        if (loginData.additionalInfo != null) {
+          for (var i = 0; i < loginData.additionalInfo!.length; i++) {
+            print('AdditionalInfo:' + loginData.additionalInfo![i]);
+          }
+        }
         return _loginUser(loginData);
       },
       onSubmitAnimationCompleted: () {
@@ -205,6 +213,13 @@ class LoginScreen extends StatelessWidget {
         // Show new password dialog
       },
       showDebugButtons: true,
+      additionalInfo: [
+        AdditionalInfo(
+          label: 'NickName',
+          controller: _nickNameController,
+          focusNode: _nickNameFocusNode,
+        ),
+      ],
     );
   }
 }

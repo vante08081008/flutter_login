@@ -13,7 +13,8 @@ class _LoginCard extends StatefulWidget {
       this.hideForgotPasswordButton = false,
       this.hideSignUpButton = false,
       this.loginAfterSignUp = true,
-      this.hideProvidersTitle = false})
+      this.hideProvidersTitle = false,
+      this.additionalInfo})
       : super(key: key);
 
   final AnimationController? loadingController;
@@ -27,6 +28,7 @@ class _LoginCard extends StatefulWidget {
   final bool loginAfterSignUp;
   final bool hideProvidersTitle;
   final LoginUserType userType;
+  final List<AdditionalInfo>? additionalInfo;
 
   @override
   _LoginCardState createState() => _LoginCardState();
@@ -172,10 +174,17 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
         password: auth.password,
       ));
     } else {
+      List<String>? additionalInfo;
+      if (widget.additionalInfo != null) {
+        additionalInfo = [];
+        for (var i = 0; i < widget.additionalInfo!.length; i++) {
+          additionalInfo.add(widget.additionalInfo![i].controller!.text);
+        }
+      }
       error = await auth.onSignup!(LoginData(
-        name: auth.email,
-        password: auth.password,
-      ));
+          name: auth.email,
+          password: auth.password,
+          additionalInfo: additionalInfo));
     }
 
     // workaround to run after _cardSizeAnimation in parent finished
@@ -195,7 +204,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       return false;
     }
 
-    if (auth.isSignup && !widget.loginAfterSignUp) {
+    if (auth.isSignup /* && !widget.loginAfterSignUp*/) {
       showSuccessToast(
           context, messages.flushbarTitleSuccess, messages.signUpSuccess);
       _switchAuthMode();
@@ -203,7 +212,11 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       return false;
     }
 
-    widget.onSubmitCompleted!();
+    if (auth.isSignup == false) {
+      widget.onSubmitCompleted!();
+    } else {
+      _switchAuthMode();
+    }
 
     return true;
   }
@@ -300,7 +313,15 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       controller: _confirmPassController,
       textInputAction: TextInputAction.done,
       focusNode: _confirmPasswordFocusNode,
-      onFieldSubmitted: (value) => _submit(),
+      onFieldSubmitted: (value) {
+        if ((widget.additionalInfo != null) &&
+            (widget.additionalInfo!.length > 0)) {
+          FocusScope.of(context)
+              .requestFocus(widget.additionalInfo![0].focusNode);
+        } else {
+          _submit();
+        }
+      },
       validator: auth.isSignup
           ? (value) {
               if (value != _passController!.text) {
@@ -310,6 +331,34 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
             }
           : (value) => null,
       onSaved: (value) => auth.confirmPassword = value!,
+    );
+  }
+
+  Widget _buildAdditionalInfoField(
+      double width, List<AdditionalInfo> info, int index, Auth auth) {
+    return AnimatedTextFormField(
+      width: width,
+      enabled: auth.isSignup,
+      loadingController: _loadingController,
+      inertiaController: _postSwitchAuthController,
+      inertiaDirection: TextFieldInertiaDirection.right,
+      labelText: info[index].label,
+      controller: info[index].controller,
+      textInputAction: TextInputAction.done,
+      focusNode: info[index].focusNode,
+      onFieldSubmitted: (value) {
+        if (index == info.length - 1) {
+          _submit();
+        } else {
+          FocusScope.of(context).requestFocus(info[index + 1].focusNode);
+        }
+      },
+      validator: auth.isSignup
+          ? ((info[index].validator != null)
+              ? info[index].validator
+              : (value) => null)
+          : (value) => null,
+      onChanged: info[index].onChanged,
     );
   }
 
@@ -463,7 +512,20 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
               vertical: 10,
             ),
             onExpandCompleted: () => _postSwitchAuthController.forward(),
-            child: _buildConfirmPasswordField(textFieldWidth, messages, auth),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _buildConfirmPasswordField(textFieldWidth, messages, auth),
+                if (widget.additionalInfo != null)
+                  for (int i = 0; i < widget.additionalInfo!.length; i++)
+                    Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: _buildAdditionalInfoField(
+                          textFieldWidth, widget.additionalInfo!, i, auth),
+                    ),
+                SizedBox(height: 10),
+              ],
+            ),
           ),
           Container(
             padding: Paddings.fromRBL(cardPadding),

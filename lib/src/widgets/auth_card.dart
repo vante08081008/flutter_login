@@ -2,6 +2,7 @@ library auth_card;
 
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_login/additional_info.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:another_transformer_page_view/another_transformer_page_view.dart';
@@ -43,6 +44,7 @@ class AuthCard extends StatefulWidget {
     this.hideSignUpButton = false,
     this.loginAfterSignUp = true,
     this.hideProvidersTitle = false,
+    this.additionalInfo,
   }) : super(key: key);
 
   final EdgeInsets padding;
@@ -56,6 +58,7 @@ class AuthCard extends StatefulWidget {
   final bool loginAfterSignUp;
   final LoginUserType userType;
   final bool hideProvidersTitle;
+  final List<AdditionalInfo>? additionalInfo;
 
   @override
   AuthCardState createState() => AuthCardState();
@@ -316,6 +319,7 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
                     hideForgotPasswordButton: widget.hideForgotPasswordButton,
                     loginAfterSignUp: widget.loginAfterSignUp,
                     hideProvidersTitle: widget.hideProvidersTitle,
+                    additionalInfo: widget.additionalInfo,
                   ),
                 )
               : _RecoverCard(
