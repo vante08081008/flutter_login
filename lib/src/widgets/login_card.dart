@@ -311,7 +311,10 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       inertiaDirection: TextFieldInertiaDirection.right,
       labelText: messages.confirmPasswordHint,
       controller: _confirmPassController,
-      textInputAction: TextInputAction.done,
+      textInputAction:
+          (widget.additionalInfo != null) && (widget.additionalInfo!.length > 0)
+              ? TextInputAction.next
+              : TextInputAction.done,
       focusNode: _confirmPasswordFocusNode,
       onFieldSubmitted: (value) {
         if ((widget.additionalInfo != null) &&
@@ -344,7 +347,9 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       inertiaDirection: TextFieldInertiaDirection.right,
       labelText: info[index].label,
       controller: info[index].controller,
-      textInputAction: TextInputAction.done,
+      textInputAction: (index == info.length - 1)
+          ? TextInputAction.done
+          : TextInputAction.next,
       focusNode: info[index].focusNode,
       onFieldSubmitted: (value) {
         if (index == info.length - 1) {
@@ -359,6 +364,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
               : (value) => null)
           : (value) => null,
       onChanged: info[index].onChanged,
+      prefixIcon: Icon(info[index].iconData),
     );
   }
 

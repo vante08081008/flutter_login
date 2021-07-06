@@ -248,7 +248,11 @@ class FlutterLogin extends StatefulWidget {
       this.loginAfterSignUp = true,
       this.footer,
       this.hideProvidersTitle = false,
-      this.additionalInfo})
+      this.additionalInfo,
+      this.smsAuth = false,
+      this.onSmsAuth = _delayed,
+      this.sendSmsAuthCode = _delayed,
+      this.updatePassword})
       : super(key: key);
 
   /// Called when the user hit the submit button when in sign up mode
@@ -326,6 +330,12 @@ class FlutterLogin extends StatefulWidget {
 
   /// Additional informations of signing up
   final List<AdditionalInfo>? additionalInfo;
+
+  // SMS auth
+  final bool smsAuth;
+  final Future<String?>? Function(String) onSmsAuth;
+  final Future<String?>? Function(String) sendSmsAuthCode;
+  final Function(String)? updatePassword;
 
   static final FormFieldValidator<String> defaultEmailValidator = (value) {
     if (value!.isEmpty || !Regex.email.hasMatch(value)) {
@@ -663,6 +673,10 @@ class _FlutterLoginState extends State<FlutterLogin>
                         loginAfterSignUp: widget.loginAfterSignUp,
                         hideProvidersTitle: widget.hideProvidersTitle,
                         additionalInfo: widget.additionalInfo,
+                        smsAuth: widget.smsAuth,
+                        onSmsAuth: widget.onSmsAuth,
+                        sendSmsAuthCode: widget.sendSmsAuthCode,
+                        updatePassword: widget.updatePassword,
                       ),
                     ),
                     Positioned(
@@ -684,4 +698,10 @@ class _FlutterLoginState extends State<FlutterLogin>
       ),
     );
   }
+}
+
+Future<String?> _delayed(String code) {
+  return Future.delayed(Duration(milliseconds: 1000)).then((_) {
+    return null;
+  });
 }

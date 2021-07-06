@@ -29,6 +29,7 @@ import 'fade_in.dart';
 
 part 'login_card.dart';
 part 'recover_card.dart';
+part 'sms_auth_card.dart';
 
 class AuthCard extends StatefulWidget {
   AuthCard({
@@ -45,6 +46,10 @@ class AuthCard extends StatefulWidget {
     this.loginAfterSignUp = true,
     this.hideProvidersTitle = false,
     this.additionalInfo,
+    this.smsAuth = false,
+    this.onSmsAuth = _delayed,
+    this.sendSmsAuthCode = _delayed,
+    this.updatePassword,
   }) : super(key: key);
 
   final EdgeInsets padding;
@@ -59,6 +64,10 @@ class AuthCard extends StatefulWidget {
   final LoginUserType userType;
   final bool hideProvidersTitle;
   final List<AdditionalInfo>? additionalInfo;
+  final bool smsAuth;
+  final Future<String?>? Function(String) onSmsAuth;
+  final Future<String?>? Function(String) sendSmsAuthCode;
+  final Function(String)? updatePassword;
 
   @override
   AuthCardState createState() => AuthCardState();
@@ -322,11 +331,21 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
                     additionalInfo: widget.additionalInfo,
                   ),
                 )
-              : _RecoverCard(
-                  userValidator: widget.userValidator,
-                  userType: widget.userType,
-                  onSwitchLogin: () => _switchRecovery(false),
-                );
+              : (widget.smsAuth
+                  ? _SMSAuthCard(
+                      userType: widget.userType,
+                      onSwitchLogin: () => _switchRecovery(false),
+                      onSmsAuth: widget.onSmsAuth,
+                      userValidator: widget.userValidator,
+                      passwordValidator: widget.passwordValidator,
+                      sendSmsAuthCode: widget.sendSmsAuthCode,
+                      updatePassword: widget.updatePassword,
+                    )
+                  : _RecoverCard(
+                      userValidator: widget.userValidator,
+                      userType: widget.userType,
+                      onSwitchLogin: () => _switchRecovery(false),
+                    ));
 
           return Align(
             alignment: Alignment.topCenter,
@@ -350,4 +369,10 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
       },
     );
   }
+}
+
+Future<String?> _delayed(String code) {
+  return Future.delayed(Duration(milliseconds: 1000)).then((_) {
+    return null;
+  });
 }
