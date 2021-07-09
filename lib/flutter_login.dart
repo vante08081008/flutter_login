@@ -1,5 +1,6 @@
 library flutter_login;
 
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
@@ -391,15 +392,17 @@ class _FlutterLoginState extends State<FlutterLogin>
     );
 
     Future.delayed(const Duration(seconds: 1), () {
-      _loadingController!.forward();
+      if (mounted) {
+        _loadingController!.forward();
+      }
     });
   }
 
   @override
   void dispose() {
-    //_loadingController!.dispose();
-    //_logoController!.dispose();
-    //_titleController!.dispose();
+    _loadingController!.dispose();
+    _logoController!.dispose();
+    _titleController!.dispose();
     super.dispose();
   }
 
