@@ -397,9 +397,9 @@ class _FlutterLoginState extends State<FlutterLogin>
 
   @override
   void dispose() {
-    _loadingController!.dispose();
-    _logoController!.dispose();
-    _titleController!.dispose();
+    //_loadingController!.dispose();
+    //_logoController!.dispose();
+    //_titleController!.dispose();
     super.dispose();
   }
 

@@ -154,9 +154,9 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _formLoadingController.dispose();
-    _pageController!.dispose();
-    _routeTransitionController.dispose();
+    //_formLoadingController.dispose();
+    //_pageController!.dispose();
+    //_routeTransitionController.dispose();
     super.dispose();
   }
 
